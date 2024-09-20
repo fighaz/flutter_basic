@@ -1,3 +1,7 @@
+#NAMA : SOFISUGIHARTO ZAINI
+#TI-3C
+#ABSEN : 25
+
 #hello_world
 
 A new flutter project

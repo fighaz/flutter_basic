@@ -7,82 +7,108 @@ import 'package:flutter_basic/basic_widgets/input_widget.dart';
 import 'package:flutter_basic/basic_widgets/loading_cupertino.dart';
 import 'package:flutter_basic/basic_widgets/text_widget.dart';
 
-void main() => runApp(const MyApp());
+void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  MyApp({Key? key}) : super(key: key);
 
-  @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      title: 'Contoh Date Picker',
-      home: MyHomePage(title: 'Contoh Date Picker'),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
-
-  final String title;
-
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  // Variable/State untuk mengambil tanggal
-  DateTime selectedDate = DateTime.now();
-
-  //  Initial SelectDate FLutter
-  Future<void> _selectDate(BuildContext context) async {
-    // Initial DateTime FIinal Picked
-    final DateTime? picked = await showDatePicker(
-        context: context,
-        initialDate: selectedDate,
-        firstDate: DateTime(2015, 8),
-        lastDate: DateTime(2101));
-    if (picked != null && picked != selectedDate) {
-      setState(() {
-        selectedDate = picked;
-      });
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: SingleChildScrollView(
-        child: Center(
+  Widget titleSection = Container(
+    padding: const EdgeInsets.all(32),
+    child: Row(
+      children: [
+        Expanded(
+          /* soal 1*/
           child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              const MyCupertinoButtonWidget(),
-              const MyDialogWidget(),
-              const MyImageWidget(),
-              const MyTextWidget(),
-              const MyInputWidget(),
-              Text("${selectedDate.toLocal()}".split(' ')[0]),
-              const SizedBox(
-                height: 20.0,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              /* soal 2*/
+              Container(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: const Text(
+                  'Wisata Gunung di Batu',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
-              ElevatedButton(
-                onPressed: () => {
-                  _selectDate(context),
-                  // ignore: avoid_print
-                  print(
-                      selectedDate.day + selectedDate.month + selectedDate.year)
-                },
-                child: const Text('Pilih Tanggal'),
-              ),
+              const Text('Batu, Malang, Indonesia',
+                  style: TextStyle(color: Colors.grey)),
             ],
           ),
         ),
+        /* soal 3*/
+        const Icon(
+          Icons.star_rate,
+          color: Colors.red,
+        ),
+        const Text("41"),
+      ],
+    ),
+  );
+
+  @override
+  Widget build(BuildContext context) {
+    Color color = Theme.of(context).primaryColor;
+
+    Widget buttonSection = Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        _buildButtonColumn(color, Icons.call, 'CALL'),
+        _buildButtonColumn(color, Icons.near_me, 'ROUTE'),
+        _buildButtonColumn(color, Icons.share, 'SHARE'),
+      ],
+    );
+
+    Widget textSection = Container(
+      padding: const EdgeInsets.all(32),
+      child: const Text(
+        'Gunung Bromo atau dalam bahasa Tengger dieja "Brama", juga disebut Kaldera Tengger, adalah sebuah gunung berapi aktif di Jawa Timur, Indonesia. Gunung ini memiliki ketinggian 2.614 meter di atas permukaan laut dan berada dalam empat wilayah kabupaten, yakni Kabupaten Probolinggo, Kabupaten Pasuruan, Kabupaten Lumajang, dan Kabupaten Malang. 🙂.'
+        'Sofisugiharto Zaini-2241720026',
+        softWrap: true,
       ),
-      floatingActionButton: MyFABWidget(),
+    );
+
+    return MaterialApp(
+      title: 'Flutter layout: Nama dan NIM Anda',
+      home: Scaffold(
+        appBar: AppBar(
+          title: const Text('Flutter layout demo'),
+        ),
+        body: ListView(
+          children: [
+            Image.asset(
+              'images/bromo.jpeg',
+              width: 600,
+              height: 240,
+              fit: BoxFit.cover,
+            ),
+            titleSection,
+            buttonSection,
+            textSection,
+          ],
+        ),
+      ),
+    );
+  }
+
+  Column _buildButtonColumn(Color color, IconData icon, String label) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(icon, color: color),
+        Container(
+          margin: const EdgeInsets.only(top: 8),
+          child: Text(
+            label,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w400,
+              color: color,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

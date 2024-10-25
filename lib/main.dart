@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_basic/basic_widgets/red__text_widget.dart';
+import 'package:flutter_basic/models/plan.dart';
 // import 'package:flutter_basic/basic_widgets/dialog_widget.dart';
 // import 'package:flutter_basic/basic_widgets/fab_widget.dart';
 // import 'package:flutter_basic/basic_widgets/image_widget.dart';
@@ -9,86 +10,107 @@ import 'package:flutter_basic/basic_widgets/red__text_widget.dart';
 // import 'package:flutter_basic/basic_widgets/text_widget.dart';
 import 'package:flutter_basic/pages/home_page.dart';
 import 'package:flutter_basic/pages/item_page.dart';
+import 'package:flutter_basic/provider/plan_provide.dart';
+import 'package:flutter_basic/views/plan.screen.dart';
+import 'package:flutter_basic/views/plan_creator_screen.dart';
 import 'package:go_router/go_router.dart';
 
-void main() => runApp(MyApp());
+void main() => runApp(MasterPlanApp());
 
-final _router = GoRouter(
-  routes: [
-    GoRoute(
-      path: '/',
-      builder: (context, state) => MyHomePage(title: 'Flutter Demo Home Page'),
-    ),
-    GoRoute(
-      path: '/item',
-      builder: (context, state) => ItemPage(),
-    )
-  ],
-);
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
+class MasterPlanApp extends StatelessWidget {
+  const MasterPlanApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Container(
-              color: Colors.yellowAccent,
-              width: 55,
-              child: const RedTextWidget(
-                text: 'You have pushed the button this many times:',
-              ),
-            ),
-            Container(
-              color: Colors.greenAccent,
-              width: 100,
-              child: const Text(
-                'You have pushed the button this many times:',
-              ),
-            ),
-          ],
+    return PlanProvider(
+      notifier: ValueNotifier<List<Plan>>(const []),
+      child: MaterialApp(
+        title: 'State management app',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
+        home: PlanCreatorScreen(),
       ),
     );
   }
 }
 
-class MyApp extends StatelessWidget {
-  MyApp({Key? key}) : super(key: key);
+// final _router = GoRouter(
+//   routes: [
+//     GoRoute(
+//       path: '/',
+//       builder: (context, state) => MyHomePage(title: 'Flutter Demo Home Page'),
+//     ),
+//     GoRoute(
+//       path: '/item',
+//       builder: (context, state) => ItemPage(),
+//     )
+//   ],
+// );
 
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp.router(
-      routerConfig: _router,
-    );
-  }
+// class MyHomePage extends StatefulWidget {
+//   const MyHomePage({super.key, required this.title});
+
+//   final String title;
+
+//   @override
+//   State<MyHomePage> createState() => _MyHomePageState();
+// }
+
+// class _MyHomePageState extends State<MyHomePage> {
+//   int _counter = 0;
+//   void _incrementCounter() {
+//     setState(() {
+//       _counter++;
+//     });
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+//         title: Text(widget.title),
+//       ),
+//       body: Center(
+//         child: Column(
+//           mainAxisAlignment: MainAxisAlignment.center,
+//           children: <Widget>[
+//             Container(
+//               color: Colors.yellowAccent,
+//               width: 55,
+//               child: const RedTextWidget(
+//                 text: 'You have pushed the button this many times:',
+//               ),
+//             ),
+//             Container(
+//               color: Colors.greenAccent,
+//               width: 100,
+//               child: const Text(
+//                 'You have pushed the button this many times:',
+//               ),
+//             ),
+//           ],
+//         ),
+//       ),
+//       floatingActionButton: FloatingActionButton(
+//         onPressed: _incrementCounter,
+//         tooltip: 'Increment',
+//         child: const Icon(Icons.add),
+//       ),
+//     );
+//   }
+// }
+
+// class MyApp extends StatelessWidget {
+//   MyApp({Key? key}) : super(key: key);
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return MaterialApp.router(
+//       routerConfig: _router,
+//     );
+//   }
   // Widget titleSection = Container(
   //   padding: const EdgeInsets.all(32),
   //   child: Row(
@@ -188,7 +210,7 @@ class MyApp extends StatelessWidget {
   //     ],
   //   );
   // }
-}
+// }
 
 
 // import 'package:flutter/material.dart';

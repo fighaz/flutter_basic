@@ -14,26 +14,105 @@ import 'package:flutter_basic/provider/plan_provide.dart';
 import 'package:flutter_basic/views/plan.screen.dart';
 import 'package:flutter_basic/views/plan_creator_screen.dart';
 import 'package:go_router/go_router.dart';
+import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
 
-void main() => runApp(MasterPlanApp());
+void main() {
+  runApp(const MyApp());
+}
 
-class MasterPlanApp extends StatelessWidget {
-  const MasterPlanApp({super.key});
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return PlanProvider(
-      notifier: ValueNotifier<List<Plan>>(const []),
-      child: MaterialApp(
-        title: 'State management app',
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
+    // TODO: implement build
+    return MaterialApp(
+      title: 'Future Demo Zaini',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+        visualDensity: VisualDensity.adaptivePlatformDensity,
+      ),
+      home: const FuturePage(),
+    );
+  }
+}
+
+class FuturePage extends StatefulWidget {
+  const FuturePage({super.key});
+
+  @override
+  State<FuturePage> createState() => _FuturePageState();
+}
+
+class _FuturePageState extends State<FuturePage> {
+  String result = '';
+
+  Future<Response> getData() async {
+    const authority = 'www.googleapis.com';
+    const path = '/books/v1/volumes/ObtCSg3BZBIC';
+    Uri url = Uri.https(authority, path);
+    return http.get(url);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Back from the Future Zaini'),
+      ),
+      body: Center(
+        child: Column(
+          children: [
+            const Spacer(),
+            ElevatedButton(
+              child: const Text('Go!'),
+              onPressed: () {
+                setState(() {
+                  getData().then((value) {
+                    result = value.body.toString().substring(0, 450);
+                    setState(() {});
+                  }).catchError((_) {
+                    result = 'An error occured';
+                    setState(() {});
+                  });
+                });
+              },
+            ),
+            const Spacer(),
+            Text(result),
+            const Spacer(),
+            const CircularProgressIndicator(),
+            const Spacer(),
+          ],
         ),
-        home: PlanCreatorScreen(),
       ),
     );
   }
 }
+
+
+
+// void main() => runApp(MasterPlanApp());
+
+// class MasterPlanApp extends StatelessWidget {
+//   const MasterPlanApp({super.key});
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return PlanProvider(
+//       notifier: ValueNotifier<List<Plan>>(const []),
+//       child: MaterialApp(
+//         title: 'State management app',
+//         theme: ThemeData(
+//           primarySwatch: Colors.blue,
+//         ),
+//         home: PlanCreatorScreen(),
+//       ),
+//     );
+//   }
+// }
 
 // final _router = GoRouter(
 //   routes: [

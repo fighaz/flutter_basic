@@ -36,3 +36,44 @@ Jelaskan maksud kode langkah 5 tersebut terkait substring dan catchError!
 Capture hasil praktikum Anda berupa GIF dan lampirkan di README. Lalu lakukan commit dengan pesan "W12: Soal 3".<br>
 <u>Fungsi substring tersbut digunakan untuk mengambil character dari indeks 0 -450 dan catch error digunakan untuk menangkap error dan menampilkan apa errornya </u><br>
 ![alt text](image-2.png)
+
+# Praktikum 2: Menggunakan await/async untuk menghindari callbacks
+
+## Langkah 1: Buka file main.dart
+
+Tambahkan tiga method berisi kode seperti berikut di dalam class \_FuturePageState.
+
+```
+Future<int> returnOneAsync() async {
+  await Future.delayed(const Duration(seconds: 3));
+  return 1;
+}
+
+Future<int> returnTwoAsync() async {
+  await Future.delayed(const Duration(seconds: 3));
+  return 2;
+}
+
+Future<int> returnThreeAsync() async {
+  await Future.delayed(const Duration(seconds: 3));
+  return 3;
+}
+```
+
+## Langkah 2: Tambah method count()
+
+## Langkah 3: Panggil count()
+
+Lakukan comment kode sebelumnya, ubah isi kode onPressed() menjadi seperti berikut.
+
+## Langkah 4: Run
+
+Akhirnya, run atau tekan F5 jika aplikasi belum running. Maka Anda akan melihat seperti gambar berikut, hasil angka 6 akan tampil setelah delay 9 detik.
+![alt text](image-3.png)
+
+## Soal 4
+
+Jelaskan maksud kode langkah 1 dan 2 tersebut!
+Capture hasil praktikum Anda berupa GIF dan lampirkan di README. Lalu lakukan commit dengan pesan "W12: Soal 4".<br>
+![alt text](image-3.png)<br>
+Kode ini mendefinisikan tiga fungsi asinkron yang masing-masing mengembalikan angka 1, 2, dan 3 setelah menunggu 3 detik. Fungsi count menjumlahkan hasil dari ketiga fungsi tersebut secara berurutan, sehingga total waktu yang dibutuhkan adalah 9 detik. Setelah mendapatkan total (6), fungsi ini memperbarui variabel result menggunakan setState

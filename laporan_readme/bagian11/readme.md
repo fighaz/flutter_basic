@@ -354,7 +354,7 @@ Jika Anda tidak melihat animasi loading tampil, kemungkinan itu berjalan sangat 
 Apakah Anda mendapatkan koordinat GPS ketika run di browser? Mengapa demikian?
 Capture hasil praktikum Anda berupa GIF dan lampirkan di README. Lalu lakukan commit dengan pesan "W12: Soal 12".<br>
 ![alt text](geo.gif)<br>
-Karena kode yang ditarget digunakan untuk mentarget permission untuk android
+Bisa karena browser akan meminta akses lokasi tetapi akurasinya lebih rendah dari gps
 
 # Praktikum 7: Manajemen Future dengan FutureBuilder
 

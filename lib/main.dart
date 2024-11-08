@@ -1,7 +1,10 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_basic/basic_widgets/red__text_widget.dart';
+import 'package:flutter_basic/geolocation.dart';
 import 'package:flutter_basic/models/plan.dart';
+import 'package:flutter_basic/navigation_first.dart';
+import 'package:flutter_basic/navigationdialog.dart';
 // import 'package:flutter_basic/basic_widgets/dialog_widget.dart';
 // import 'package:flutter_basic/basic_widgets/fab_widget.dart';
 // import 'package:flutter_basic/basic_widgets/image_widget.dart';
@@ -16,6 +19,7 @@ import 'package:flutter_basic/views/plan_creator_screen.dart';
 import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
+import 'package:async/async.dart';
 
 void main() {
   runApp(const MyApp());
@@ -33,7 +37,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: const FuturePage(),
+      home: const NavigationDialogScreen(),
     );
   }
 }
@@ -47,12 +51,67 @@ class FuturePage extends StatefulWidget {
 
 class _FuturePageState extends State<FuturePage> {
   String result = '';
+  late Completer completer;
+
+  Future handleError() async {
+    try {
+      await returnError();
+    } catch (error) {
+      setState(() {
+        result = error.toString();
+      });
+    } finally {
+      print('Complete');
+    }
+  }
+
+  Future returnError() async {
+    await Future.delayed(const Duration(seconds: 2));
+    throw Exception('Something terrible happened');
+  }
 
   Future<Response> getData() async {
     const authority = 'www.googleapis.com';
     const path = '/books/v1/volumes/ObtCSg3BZBIC';
     Uri url = Uri.https(authority, path);
     return http.get(url);
+  }
+
+  void returnFG() {
+    final futures = Future.wait<int>([
+      returnOneAsync(),
+      returnTwoAsync(),
+      returnThreeAsync(),
+    ]);
+    futures.then((List<int> value) {
+      int total = 0;
+      for (var element in value) {
+        total += element;
+      }
+      setState(() {
+        result = total.toString();
+      });
+    });
+  }
+
+  Future getNumber() {
+    completer = Completer<int>();
+    calculate2();
+    return completer.future;
+  }
+
+  calculate2() async {
+    try {
+      await new Future.delayed(const Duration(seconds: 5));
+      completer.complete(42);
+    } catch (_) {
+      completer.completeError({});
+    }
+  }
+
+  Future calculate() async {
+    await Future.delayed(const Duration(seconds: 5));
+    completer.complete(42);
   }
 
   Future<int> returnOneAsync() async {
@@ -103,7 +162,23 @@ class _FuturePageState extends State<FuturePage> {
                 //     setState(() {});
                 //   });
                 // });
-                count();
+                // getNumber().then((value) {
+                //   setState(() {
+                //     result = value.toString();
+                //   });
+                // }).catchError((e) {
+                //   result = 'An error occurred';
+                // });
+                returnError().then((value) {
+                  setState(() {
+                    result = 'Success';
+                  });
+                }).catchError((onError) {
+                  setState(() {
+                    result = onError.toString();
+                  });
+                }).whenComplete(() => print('Complete'));
+                handleError();
               },
             ),
             const Spacer(),

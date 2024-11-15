@@ -14,12 +14,15 @@ import 'package:flutter_basic/navigationdialog.dart';
 import 'package:flutter_basic/pages/home_page.dart';
 import 'package:flutter_basic/pages/item_page.dart';
 import 'package:flutter_basic/provider/plan_provide.dart';
+import 'package:flutter_basic/random_screen.dart';
 import 'package:flutter_basic/views/plan.screen.dart';
 import 'package:flutter_basic/views/plan_creator_screen.dart';
 import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'package:async/async.dart';
+import 'stream.dart';
+import 'dart:math';
 
 void main() {
   runApp(const MyApp());
@@ -27,171 +30,337 @@ void main() {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return MaterialApp(
-      title: 'Future Demo Zaini',
+      title: 'Stream Sofisugiharto Zaini',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
+        primarySwatch: Colors.blueGrey,
       ),
-      home: const LocationScreen(),
+      home: const RandomScreen(),
     );
   }
 }
 
-class FuturePage extends StatefulWidget {
-  const FuturePage({super.key});
-
+class StreamHomePage extends StatefulWidget {
+  const StreamHomePage({super.key});
   @override
-  State<FuturePage> createState() => _FuturePageState();
+  State<StreamHomePage> createState() => _StreamHomePageState();
 }
 
-class _FuturePageState extends State<FuturePage> {
-  String result = '';
-  late Completer completer;
+class _StreamHomePageState extends State<StreamHomePage> {
+  Color bgcColor = Colors.blueGrey;
+  late ColorStream colorStream;
+  int lastNumber = 0;
+  late StreamController numberStreamController;
+  // late NumberStream numberStream;
+  late StreamTransformer transformer;
+  late StreamSubscription subscription;
+  late StreamSubscription subscription2;
+  late Stream<int> numberStream;
+  String values = '';
 
-  Future handleError() async {
-    try {
-      await returnError();
-    } catch (error) {
-      setState(() {
-        result = error.toString();
-      });
-    } finally {
-      print('Complete');
-    }
+  @override
+  void initState() {
+    numberStream = NumberStream().getNumbers();
+    super.initState();
+    // numberStreamController = numberStream.controller;
+    // Stream stream = numberStreamController.stream.asBroadcastStream();
+    // subscription = stream.listen((event) {
+    //   setState(() {
+    //     values += '$event - ';
+    //   });
+    // });
+    // subscription2 = stream.listen((event) {
+    //   setState(() {
+    //     values += '$event - ';
+    //   });
+    // });
+    // subscription.onError((error) {
+    //   setState(() {
+    //     lastNumber = -1;
+    //   });
+    // });
+    // subscription.onDone(() {
+    //   print('OnDone was called');
+    // });
+    // transformer = StreamTransformer<int, int>.fromHandlers(
+    //     handleData: (value, sink) {
+    //       sink.add(value * 10);
+    //     },
+    //     handleError: (error, trace, sink) {
+    //       sink.add(-1);
+    //     },
+    //     handleDone: (sink) => sink.close());
+    // stream.transform(transformer).listen((event) {
+    //   setState(() {
+    //     lastNumber = event;
+    //   });
+    // }).onError((error) {
+    //   setState(() {
+    //     lastNumber = -1;
+    //   });
+    // });
+    // super.initState();
   }
 
-  Future returnError() async {
-    await Future.delayed(const Duration(seconds: 2));
-    throw Exception('Something terrible happened');
+  void stopStream() {
+    numberStreamController.close();
   }
 
-  Future<Response> getData() async {
-    const authority = 'www.googleapis.com';
-    const path = '/books/v1/volumes/ObtCSg3BZBIC';
-    Uri url = Uri.https(authority, path);
-    return http.get(url);
+  @override
+  void dispose() {
+    subscription.cancel();
+    numberStreamController.close();
+    super.dispose();
   }
 
-  void returnFG() {
-    final futures = Future.wait<int>([
-      returnOneAsync(),
-      returnTwoAsync(),
-      returnThreeAsync(),
-    ]);
-    futures.then((List<int> value) {
-      int total = 0;
-      for (var element in value) {
-        total += element;
-      }
-      setState(() {
-        result = total.toString();
-      });
-    });
-  }
+  // void addRandomNumber() {
+  //   Random random = Random();
+  //   int myNum = random.nextInt(10);
 
-  Future getNumber() {
-    completer = Completer<int>();
-    calculate2();
-    return completer.future;
-  }
+  //   if (!numberStreamController.isClosed) {
+  //     numberStream.addNumberToSink(myNum);
+  //   } else {
+  //     setState(() {
+  //       lastNumber = -1;
+  //     });
+  //   }
 
-  calculate2() async {
-    try {
-      await new Future.delayed(const Duration(seconds: 5));
-      completer.complete(42);
-    } catch (_) {
-      completer.completeError({});
-    }
-  }
+  //   // numberStream.addError();
+  // }
 
-  Future calculate() async {
-    await Future.delayed(const Duration(seconds: 5));
-    completer.complete(42);
-  }
-
-  Future<int> returnOneAsync() async {
-    await Future.delayed(const Duration(seconds: 3));
-    return 1;
-  }
-
-  Future<int> returnTwoAsync() async {
-    await Future.delayed(const Duration(seconds: 3));
-    return 2;
-  }
-
-  Future<int> returnThreeAsync() async {
-    await Future.delayed(const Duration(seconds: 3));
-    return 3;
-  }
-
-  Future count() async {
-    int total = 0;
-    total = await returnOneAsync();
-    total += await returnTwoAsync();
-    total += await returnThreeAsync();
-    setState(() {
-      result = total.toString();
-    });
-  }
+  // void changeColor() async {
+  //   // await for (var eventColor in colorStream.getColors()) {
+  //   //   setState(() {
+  //   //     bgcColor = eventColor;
+  //   //   });
+  //   // }
+  //   colorStream.getColors().listen((eventColor) {
+  //     setState(() {
+  //       bgcColor = eventColor;
+  //     });
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Back from the Future Zaini'),
-      ),
-      body: Center(
-        child: Column(
-          children: [
-            const Spacer(),
-            ElevatedButton(
-              child: const Text('Go!'),
-              onPressed: () {
-                // setState(() {
-                //   getData().then((value) {
-                //     result = value.body.toString().substring(0, 450);
-                //     setState(() {});
-                //   }).catchError((_) {
-                //     result = 'An error occured';
-                //     setState(() {});
-                //   });
-                // });
-                // getNumber().then((value) {
-                //   setState(() {
-                //     result = value.toString();
-                //   });
-                // }).catchError((e) {
-                //   result = 'An error occurred';
-                // });
-                returnError().then((value) {
-                  setState(() {
-                    result = 'Success';
-                  });
-                }).catchError((onError) {
-                  setState(() {
-                    result = onError.toString();
-                  });
-                }).whenComplete(() => print('Complete'));
-                handleError();
-              },
-            ),
-            const Spacer(),
-            Text(result),
-            const Spacer(),
-            const CircularProgressIndicator(),
-            const Spacer(),
-          ],
+        appBar: AppBar(
+          title: const Text('Stream Sofisugiharto Zaini'),
+          backgroundColor: Colors.deepOrangeAccent,
         ),
-      ),
-    );
+        body: StreamBuilder(
+          stream: numberStream,
+          initialData: 0,
+          builder: (context, snapshot) {
+            if (snapshot.hasError) {
+              print("Error");
+            }
+            if (snapshot.hasData) {
+              return Center(
+                child: Text(
+                  snapshot.data.toString(),
+                  style: const TextStyle(fontSize: 96),
+                ),
+              );
+            } else {
+              return const SizedBox.shrink();
+            }
+          },
+        )
+        // SizedBox(
+        //   width: double.infinity,
+        //   child: Column(
+        //     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        //     crossAxisAlignment: CrossAxisAlignment.center,
+        //     children: [
+        //       Text(values),
+        //       // Text(lastNumber.toString()),
+        //       ElevatedButton(
+        //           onPressed: () => addRandomNumber(),
+        //           child: const Text("New Random Number")),
+        //       ElevatedButton(
+        //           onPressed: () => stopStream(),
+        //           child: const Text("Stop Subscription")),
+        //     ],
+        //   ),
+        // )
+        );
   }
 }
+
+
+
+
+// class MyApp extends StatelessWidget {
+//   const MyApp({super.key});
+
+//   @override
+//   Widget build(BuildContext context) {
+//     // TODO: implement build
+//     return MaterialApp(
+//       title: 'Future Demo Zaini',
+//       theme: ThemeData(
+//         primarySwatch: Colors.blue,
+//         visualDensity: VisualDensity.adaptivePlatformDensity,
+//       ),
+//       home: const LocationScreen(),
+//     );
+//   }
+// }
+
+// class FuturePage extends StatefulWidget {
+//   const FuturePage({super.key});
+
+//   @override
+//   State<FuturePage> createState() => _FuturePageState();
+// }
+
+// class _FuturePageState extends State<FuturePage> {
+//   String result = '';
+//   late Completer completer;
+
+//   Future handleError() async {
+//     try {
+//       await returnError();
+//     } catch (error) {
+//       setState(() {
+//         result = error.toString();
+//       });
+//     } finally {
+//       print('Complete');
+//     }
+//   }
+
+//   Future returnError() async {
+//     await Future.delayed(const Duration(seconds: 2));
+//     throw Exception('Something terrible happened');
+//   }
+
+//   Future<Response> getData() async {
+//     const authority = 'www.googleapis.com';
+//     const path = '/books/v1/volumes/ObtCSg3BZBIC';
+//     Uri url = Uri.https(authority, path);
+//     return http.get(url);
+//   }
+
+//   void returnFG() {
+//     final futures = Future.wait<int>([
+//       returnOneAsync(),
+//       returnTwoAsync(),
+//       returnThreeAsync(),
+//     ]);
+//     futures.then((List<int> value) {
+//       int total = 0;
+//       for (var element in value) {
+//         total += element;
+//       }
+//       setState(() {
+//         result = total.toString();
+//       });
+//     });
+//   }
+
+//   Future getNumber() {
+//     completer = Completer<int>();
+//     calculate2();
+//     return completer.future;
+//   }
+
+//   calculate2() async {
+//     try {
+//       await new Future.delayed(const Duration(seconds: 5));
+//       completer.complete(42);
+//     } catch (_) {
+//       completer.completeError({});
+//     }
+//   }
+
+//   Future calculate() async {
+//     await Future.delayed(const Duration(seconds: 5));
+//     completer.complete(42);
+//   }
+
+//   Future<int> returnOneAsync() async {
+//     await Future.delayed(const Duration(seconds: 3));
+//     return 1;
+//   }
+
+//   Future<int> returnTwoAsync() async {
+//     await Future.delayed(const Duration(seconds: 3));
+//     return 2;
+//   }
+
+//   Future<int> returnThreeAsync() async {
+//     await Future.delayed(const Duration(seconds: 3));
+//     return 3;
+//   }
+
+//   Future count() async {
+//     int total = 0;
+//     total = await returnOneAsync();
+//     total += await returnTwoAsync();
+//     total += await returnThreeAsync();
+//     setState(() {
+//       result = total.toString();
+//     });
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     // TODO: implement build
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: const Text('Back from the Future Zaini'),
+//       ),
+//       body: Center(
+//         child: Column(
+//           children: [
+//             const Spacer(),
+//             ElevatedButton(
+//               child: const Text('Go!'),
+//               onPressed: () {
+//                 // setState(() {
+//                 //   getData().then((value) {
+//                 //     result = value.body.toString().substring(0, 450);
+//                 //     setState(() {});
+//                 //   }).catchError((_) {
+//                 //     result = 'An error occured';
+//                 //     setState(() {});
+//                 //   });
+//                 // });
+//                 // getNumber().then((value) {
+//                 //   setState(() {
+//                 //     result = value.toString();
+//                 //   });
+//                 // }).catchError((e) {
+//                 //   result = 'An error occurred';
+//                 // });
+//                 returnError().then((value) {
+//                   setState(() {
+//                     result = 'Success';
+//                   });
+//                 }).catchError((onError) {
+//                   setState(() {
+//                     result = onError.toString();
+//                   });
+//                 }).whenComplete(() => print('Complete'));
+//                 handleError();
+//               },
+//             ),
+//             const Spacer(),
+//             Text(result),
+//             const Spacer(),
+//             const CircularProgressIndicator(),
+//             const Spacer(),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
 
 
 

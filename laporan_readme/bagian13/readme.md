@@ -209,7 +209,29 @@ Map<String, dynamic> toJson() {
     };
 ```
 
-## 2. Setelah Anda memiliki sebuah Map, Anda dapat menserialisasikannya kembali ke dalam string
+## 2. Setelah Anda memiliki sebuah Map, Anda dapat menserialisasikannya kembali ke dalam string JSON.
 
-JSON. Tambahkan metode baru di di bagian bawah kelas \_MyHomePageState, di dalam file
+Tambahkan metode baru di di bagian bawah kelas \_MyHomePageState, di dalam file
 main.dart, yang disebut convertToJSON:
+
+```
+ String convertToJSON(List<Pizza> pizzas) {
+    return jsonEncode(pizzas.map((pizza) => jsonEncode(pizza)).toList());
+  }
+```
+
+## 3. Metode ini mengubah objek List of Pizza kembali menjadi string Json dengan memanggil metode jsonEncode lagi di pustaka dart_convert.
+
+## 4. Terakhir, mari panggil metode tersebut dan cetak string JSON di Debug Console. Tambahkan kode berikut ke metode readJsonFile, tepat sebelum mengembalikan List myPizzas:
+
+```
+    String json = convertToJSON(myPizzas);
+    print(json);
+    return myPizzas;
+```
+
+## 5. Jalankan aplikasi. Anda akan melihat string JSON dicetak, seperti yang ditunjukkan pada gambar berikut:
+
+![alt text](image-2.png)
+
+# C. Praktikum 3: Saving data simply with SharedPreferences

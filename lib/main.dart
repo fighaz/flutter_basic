@@ -25,6 +25,7 @@ import 'package:http/http.dart';
 import 'package:async/async.dart';
 import 'stream.dart';
 import 'dart:math';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   runApp(const MyApp());
@@ -54,6 +55,31 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   String pizzaString = '';
   List<Pizza> myPizzas = [];
+  int appCounter = 0;
+
+  Future readAndWritePreference() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    appCounter = prefs.getInt('appCounter') ?? 0;
+    appCounter++;
+    await prefs.setInt('appCounter', appCounter);
+    setState(() {
+      appCounter = appCounter;
+    });
+  }
+
+  Future deletePreference() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
+    setState(() {
+      appCounter = 0;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    readAndWritePreference();
+  }
 
   Future<List<Pizza>> readJsonFile() async {
     String myString = await DefaultAssetBundle.of(context)
@@ -73,33 +99,46 @@ class _MyHomePageState extends State<MyHomePage> {
     return jsonEncode(pizzas.map((pizza) => jsonEncode(pizza)).toList());
   }
 
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    readJsonFile().then((value) {
-      setState(() {
-        myPizzas = value;
-      });
-    });
-  }
+  // @override
+  // void initState() {
+  //   // TODO: implement initState
+  //   super.initState();
+  //   readJsonFile().then((value) {
+  //     setState(() {
+  //       myPizzas = value;
+  //     });
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('JSON'),
-      ),
-      body: ListView.builder(
-          itemCount: myPizzas.length,
-          itemBuilder: (context, index) {
-            return ListTile(
-              title: Text(myPizzas[index].pizzaName),
-              subtitle: Text(myPizzas[index].description),
-            );
-          }),
-    );
+        appBar: AppBar(
+          title: const Text('Shared Preferences'),
+        ),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Text('You have opened the app $appCounter times.'),
+              ElevatedButton(
+                onPressed: () {
+                  deletePreference();
+                },
+                child: const Text('Reset Counter'),
+              )
+            ],
+          ),
+        )
+        // ListView.builder(
+        //     itemCount: myPizzas.length,
+        //     itemBuilder: (context, index) {
+        //       return ListTile(
+        //         title: Text(myPizzas[index].pizzaName),
+        //         subtitle: Text(myPizzas[index].description),
+        //       );
+        //     }),
+        );
   }
 }
 // class StreamHomePage extends StatefulWidget {

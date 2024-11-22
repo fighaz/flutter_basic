@@ -328,3 +328,61 @@ Future deletePreference() async {
 
 ![alt text](image-4.png)
 ![alt text](image-5.png)
+
+# Praktikum 4: Accessing the filesystem, part 1: path_provider
+
+## 1. menambahkan dependency yang relevan ke file pubspec.yaml. Tambahkan path_provider dengan mengetikkan perintah ini dari Terminal Anda: flutter pub add path_provider
+
+## 2. Di bagian atas file main.dart, tambahkan impor path_provider:
+
+## 3. Di bagian atas kelas \_MyHomePageState, tambahkan variabel State yang akan kita gunakan untuk memperbarui antarmuka pengguna:
+
+```
+String documentsPath = '';
+String tempPath = '';
+```
+
+## 4. Masih dalam kelas \_MyHomePageState, tambahkan metode untuk mengambil direktori temporary dan dokumen:
+
+```
+Future getPaths() async {
+    final docDir = await getApplicationDocumentsDirectory();
+    final tempDir = await getTemporaryDirectory();
+    setState(() {
+      documentsPath = docDir.path;
+      tempPath = tempDir.path;
+    });
+  }
+```
+
+## 5. Pada metode initState dari kelas \_MyHomePageState, panggil metode getPaths:
+
+```
+ @override
+  void initState() {
+    super.initState();
+    getPaths();
+  }
+```
+
+## 6. Pada metode build \_MyHomePageState, buat UI dengan dua widget Teks yang menunjukkan path yang diambil:
+
+```
+@override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+          title: const Text('Shared Preferences'),
+        ),
+        body:
+            Column(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+          Text('Doc path : $documentsPath'),
+          Text('Temp path : $tempPath'),
+        ])
+```
+
+## Jalankan aplikasi. Anda akan melihat layar yang terlihat seperti berikut ini:
+
+![alt text](image-6.png)
+
+# D. Praktikum 5: Accessing the filesystem, part 2: Working with directories

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_basic/basic_widgets/red__text_widget.dart';
 import 'package:flutter_basic/geolocation.dart';
@@ -60,6 +61,18 @@ class _MyHomePageState extends State<MyHomePage> {
   // List<Pizza> myPizzas = [];
   // int appCounter = 0;
 
+  late File myFile;
+  String fileText = '';
+
+  Future<bool> writeFile() async {
+    try {
+      await myFile.writeAsString('Margherita,Capricciosa,Napoli');
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
   Future getPaths() async {
     final docDir = await getApplicationDocumentsDirectory();
     final tempDir = await getTemporaryDirectory();
@@ -90,7 +103,23 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    getPaths();
+    getPaths().then((_) {
+      myFile = File('$documentsPath/pizzas.txt');
+      writeFile();
+    });
+    super.initState();
+  }
+
+  Future<bool> readFile() async {
+    try {
+      String fileContent = await myFile.readAsString();
+      setState(() {
+        fileText = fileContent;
+      });
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
 
   // Future<List<Pizza>> readJsonFile() async {
@@ -132,6 +161,9 @@ class _MyHomePageState extends State<MyHomePage> {
             Column(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
           Text('Doc path : $documentsPath'),
           Text('Temp path : $tempPath'),
+          ElevatedButton(
+              onPressed: () => readFile, child: const Text('Read File')),
+          Text(fileText)
         ])
         // Center(
         //   child: Column(

@@ -386,3 +386,77 @@ Future getPaths() async {
 ![alt text](image-6.png)
 
 # D. Praktikum 5: Accessing the filesystem, part 2: Working with directories
+
+## 1. Di bagian atas berkas main.dart, impor pustaka dart:io:
+
+## 2. Di bagian atas kelas \_MyHomePageState, di file main.dart, buat dua variabel State baru untuk file dan isinya:
+
+```
+  late File myFile;
+  String fileText = '';
+```
+
+## 3.Masih dalam kelas MyHomePageState, buat metode baru bernama writeFile dan gunakan kelas File dari pustaka dart:io untuk membuat file baru:
+
+```
+  Future<bool> writeFile() async {
+    try {
+      await myFile.writeAsString('Margherita,Capricciosa,Napoli');
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+```
+
+## 4. Dalam metode initState, setelah memanggil metode getPaths, dalam metode then, buat sebuah file dan panggil metode writeFile:
+
+```
+ @override
+  void initState() {
+    super.initState();
+    getPaths().then((_) {
+      myFile = File('$documentsPath/pizzas.txt');
+      writeFile();
+    });
+    super.initState();
+  }
+```
+
+## 5. Buat metode untuk membaca file:
+
+```
+Future<bool> readFile() async {
+    try {
+      String fileContent = await myFile.readAsString();
+      setState(() {
+        fileText = fileContent;
+      });
+    } catch (e) {
+      return false;
+    }
+  }
+```
+
+## 6. Dalam metode build, di widget Column, perbarui antarmuka pengguna dengan ElevatedButton.
+
+Ketika pengguna menekan tombol, tombol akan mencoba membaca konten file dan
+menampilkannya di layar, cek kode cetak tebal:
+
+```
+ Text('Doc path : $documentsPath'),
+          Text('Temp path : $tempPath'),
+          ElevatedButton(
+              onPressed: () => readFile, child: const Text('Read File')),
+          Text(fileText)
+```
+
+## 7. Jalankan aplikasi dan tekan tombol Baca File. Di bawah tombol tersebut.
+
+Anda akan melihat teks
+Margherita, Capricciosa, Napoli, seperti yang ditunjukkan pada tangkapan layar berikut:
+![alt text](image-7.png)
+
+# Praktikum 6: Using secure storage to store data
+
+## Tambahkan flutter_secure_storage ke proyek Anda, dengan mengetik: flutter pub add flutter_secure_storage

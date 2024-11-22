@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_basic/basic_widgets/red__text_widget.dart';
 import 'package:flutter_basic/geolocation.dart';
+import 'package:flutter_basic/models/pizza.dart';
 import 'package:flutter_basic/models/plan.dart';
 import 'package:flutter_basic/navigation_first.dart';
 import 'package:flutter_basic/navigationdialog.dart';
@@ -33,37 +35,89 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Stream Sofisugiharto Zaini',
+      title: 'Flutter JSON Demo',
       theme: ThemeData(
-        primarySwatch: Colors.blueGrey,
+        primarySwatch: Colors.blue,
       ),
-      home: const RandomScreen(),
+      home: const MyHomePage(),
     );
   }
 }
 
-class StreamHomePage extends StatefulWidget {
-  const StreamHomePage({super.key});
+class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key});
+
   @override
-  State<StreamHomePage> createState() => _StreamHomePageState();
+  State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _StreamHomePageState extends State<StreamHomePage> {
-  Color bgcColor = Colors.blueGrey;
-  late ColorStream colorStream;
-  int lastNumber = 0;
-  late StreamController numberStreamController;
-  // late NumberStream numberStream;
-  late StreamTransformer transformer;
-  late StreamSubscription subscription;
-  late StreamSubscription subscription2;
-  late Stream<int> numberStream;
-  String values = '';
+class _MyHomePageState extends State<MyHomePage> {
+  String pizzaString = '';
+  List<Pizza> myPizzas = [];
+
+  Future<List<Pizza>> readJsonFile() async {
+    String myString = await DefaultAssetBundle.of(context)
+        .loadString('assets/pizzalist.json');
+    List pizzaMapList = jsonDecode(myString);
+    List<Pizza> myPizzas = [];
+    for (var pizza in pizzaMapList) {
+      Pizza myPizza = Pizza.fromJson(pizza);
+      myPizzas.add(myPizza);
+    }
+    return myPizzas;
+  }
 
   @override
   void initState() {
-    numberStream = NumberStream().getNumbers();
+    // TODO: implement initState
     super.initState();
+    readJsonFile().then((value) {
+      setState(() {
+        myPizzas = value;
+      });
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('JSON'),
+      ),
+      body: ListView.builder(
+          itemCount: myPizzas.length,
+          itemBuilder: (context, index) {
+            return ListTile(
+              title: Text(myPizzas[index].pizzaName),
+              subtitle: Text(myPizzas[index].description),
+            );
+          }),
+    );
+  }
+}
+// class StreamHomePage extends StatefulWidget {
+//   const StreamHomePage({super.key});
+//   @override
+//   State<StreamHomePage> createState() => _StreamHomePageState();
+// }
+
+// class _StreamHomePageState extends State<StreamHomePage> {
+//   Color bgcColor = Colors.blueGrey;
+//   late ColorStream colorStream;
+//   int lastNumber = 0;
+//   late StreamController numberStreamController;
+//   // late NumberStream numberStream;
+//   late StreamTransformer transformer;
+//   late StreamSubscription subscription;
+//   late StreamSubscription subscription2;
+//   late Stream<int> numberStream;
+//   String values = '';
+
+//   @override
+//   void initState() {
+//     numberStream = NumberStream().getNumbers();
+//     super.initState();
     // numberStreamController = numberStream.controller;
     // Stream stream = numberStreamController.stream.asBroadcastStream();
     // subscription = stream.listen((event) {
@@ -102,18 +156,18 @@ class _StreamHomePageState extends State<StreamHomePage> {
     //   });
     // });
     // super.initState();
-  }
+  // }
 
-  void stopStream() {
-    numberStreamController.close();
-  }
+  // void stopStream() {
+  //   numberStreamController.close();
+  // }
 
-  @override
-  void dispose() {
-    subscription.cancel();
-    numberStreamController.close();
-    super.dispose();
-  }
+  // @override
+  // void dispose() {
+  //   subscription.cancel();
+  //   numberStreamController.close();
+  //   super.dispose();
+  // }
 
   // void addRandomNumber() {
   //   Random random = Random();
@@ -143,33 +197,33 @@ class _StreamHomePageState extends State<StreamHomePage> {
   //   });
   // }
 
-  @override
-  Widget build(BuildContext context) {
-    // TODO: implement build
-    return Scaffold(
-        appBar: AppBar(
-          title: const Text('Stream Sofisugiharto Zaini'),
-          backgroundColor: Colors.deepOrangeAccent,
-        ),
-        body: StreamBuilder(
-          stream: numberStream,
-          initialData: 0,
-          builder: (context, snapshot) {
-            if (snapshot.hasError) {
-              print("Error");
-            }
-            if (snapshot.hasData) {
-              return Center(
-                child: Text(
-                  snapshot.data.toString(),
-                  style: const TextStyle(fontSize: 96),
-                ),
-              );
-            } else {
-              return const SizedBox.shrink();
-            }
-          },
-        )
+  // @override
+  // Widget build(BuildContext context) {
+  //   // TODO: implement build
+  //   return Scaffold(
+  //       appBar: AppBar(
+  //         title: const Text('Stream Sofisugiharto Zaini'),
+  //         backgroundColor: Colors.deepOrangeAccent,
+  //       ),
+  //       body: StreamBuilder(
+  //         stream: numberStream,
+  //         initialData: 0,
+  //         builder: (context, snapshot) {
+  //           if (snapshot.hasError) {
+  //             print("Error");
+  //           }
+  //           if (snapshot.hasData) {
+  //             return Center(
+  //               child: Text(
+  //                 snapshot.data.toString(),
+  //                 style: const TextStyle(fontSize: 96),
+  //               ),
+  //             );
+  //           } else {
+  //             return const SizedBox.shrink();
+  //           }
+  //         },
+  //       )
         // SizedBox(
         //   width: double.infinity,
         //   child: Column(
@@ -187,9 +241,9 @@ class _StreamHomePageState extends State<StreamHomePage> {
         //     ],
         //   ),
         // )
-        );
-  }
-}
+//         );
+//   }
+// }
 
 
 

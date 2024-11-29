@@ -1,0 +1,24 @@
+import 'dart:io';
+import 'package:flutter_basic/models/pizza.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'models/pizza.dart';
+
+class Httphelper {
+  final String authority = "https://wm89g.wiremockapi.cloud/";
+  final String path = "pizzalist";
+
+  Future<List<Pizza>> getPizzaList() async {
+    final Uri url = Uri.parse(authority + path);
+    final http.Response result = await http.get(url);
+    if (result.statusCode == HttpStatus.ok) {
+      final jsonResponse = jsonDecode(result.body);
+      final List<Pizza> pizzas =
+          jsonResponse.map<Pizza>((i) => Pizza.fromJson(i)).toList();
+
+      return pizzas;
+    } else {
+      return [];
+    }
+  }
+}

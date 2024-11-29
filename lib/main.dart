@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_basic/basic_widgets/red__text_widget.dart';
 import 'package:flutter_basic/geolocation.dart';
+import 'package:flutter_basic/httphelper.dart';
 import 'package:flutter_basic/models/pizza.dart';
 import 'package:flutter_basic/models/plan.dart';
 import 'package:flutter_basic/navigation_first.dart';
@@ -56,18 +57,24 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final pwdController = TextEditingController();
-  String myPass = '';
-  final storage = const FlutterSecureStorage();
-  final myKey = 'myPass';
+  // final pwdController = TextEditingController();
+  // String myPass = '';
+  // final storage = const FlutterSecureStorage();
+  // final myKey = 'myPass';
 
-  Future writeToSecureStorage() async {
-    await storage.write(key: myKey, value: pwdController.text);
-  }
+  // Future writeToSecureStorage() async {
+  //   await storage.write(key: myKey, value: pwdController.text);
+  // }
 
-  Future<String> readFromSecureStorage() async {
-    String secret = await storage.read(key: myKey) ?? '';
-    return secret;
+  // Future<String> readFromSecureStorage() async {
+  //   String secret = await storage.read(key: myKey) ?? '';
+  //   return secret;
+  // }
+
+  Future<List<Pizza>> callPizzas() async {
+    Httphelper helper = Httphelper();
+    List<Pizza> pizzas = await helper.getPizzaList();
+    return pizzas;
   }
 
   @override
@@ -174,69 +181,90 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text('Path Provider'),
-        ),
-        body: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: Column(
-              children: [
-                TextField(
-                  controller: pwdController,
-                ),
-                ElevatedButton(
-                    onPressed: () {
-                      writeToSecureStorage();
-                    },
-                    child: const Text('Save Value')),
-                ElevatedButton(
-                    onPressed: () {
-                      readFromSecureStorage().then((value) {
-                        setState(() {
-                          myPass = value;
-                        });
-                      });
-                    },
-                    child: const Text('Read Value')),
-                Text(myPass)
-              ],
-            ),
-          ),
-        )
-
-        //     Column(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-        //   Text('Doc path : $documentsPath'),
-        //   Text('Temp path : $tempPath'),
-        //   ElevatedButton(
-        //       onPressed: () => readFile, child: const Text('Read File')),
-        //   Text(fileText)
-        // ])
-        // Center(
-        //   child: Column(
-        //     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        //     children: [
-        //       Text('You have opened the app $appCounter times.'),
-        //       ElevatedButton(
-        //         onPressed: () {
-        //           deletePreference();
-        //         },
-        //         child: const Text('Reset Counter'),
-        //       )
-        //     ],
-        //   ),
-        // )
-        // ListView.builder(
-        //     itemCount: myPizzas.length,
-        //     itemBuilder: (context, index) {
-        //       return ListTile(
-        //         title: Text(myPizzas[index].pizzaName),
-        //         subtitle: Text(myPizzas[index].description),
-        //       );
-        //     }),
-        );
+      appBar: AppBar(
+        title: const Text('JSON'),
+      ),
+      body: FutureBuilder(
+          future: callPizzas(),
+          builder: (BuildContext context, AsyncSnapshot<List<Pizza>> snapshot) {
+            if (snapshot.hasError) {
+              return const Text('Sometging when wrong');
+            } else if (!snapshot.hasData) {
+              return const CircularProgressIndicator();
+            }
+            return ListView.builder(
+                itemCount: (snapshot.data == null) ? 0 : snapshot.data!.length,
+                itemBuilder: (BuildContext context, int position) {
+                  return ListTile(
+                    title: Text(snapshot.data![position].pizzaName),
+                    subtitle: Text(
+                        '${snapshot.data![position].description}i  ${snapshot.data![position].price}'),
+                  );
+                });
+          }),
+    );
   }
+
+  // SingleChildScrollView(
+  //   child: Padding(
+  //     padding: const EdgeInsets.all(10.0),
+  //     child: Column(
+  //       children: [
+  //         TextField(
+  //           controller: pwdController,
+  //         ),
+  //         ElevatedButton(
+  //             onPressed: () {
+  //               writeToSecureStorage();
+  //             },
+  //             child: const Text('Save Value')),
+  //         ElevatedButton(
+  //             onPressed: () {
+  //               readFromSecureStorage().then((value) {
+  //                 setState(() {
+  //                   myPass = value;
+  //                 });
+  //               });
+  //             },
+  //             child: const Text('Read Value')),
+  //         Text(myPass)
+  //       ],
+  //     ),
+  //   ),
+  // )
+
+  //     Column(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+  //   Text('Doc path : $documentsPath'),
+  //   Text('Temp path : $tempPath'),
+  //   ElevatedButton(
+  //       onPressed: () => readFile, child: const Text('Read File')),
+  //   Text(fileText)
+  // ])
+  // Center(
+  //   child: Column(
+  //     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+  //     children: [
+  //       Text('You have opened the app $appCounter times.'),
+  //       ElevatedButton(
+  //         onPressed: () {
+  //           deletePreference();
+  //         },
+  //         child: const Text('Reset Counter'),
+  //       )
+  //     ],
+  //   ),
+  // )
+  // ListView.builder(
+  //     itemCount: myPizzas.length,
+  //     itemBuilder: (context, index) {
+  //       return ListTile(
+  //         title: Text(myPizzas[index].pizzaName),
+  //         subtitle: Text(myPizzas[index].description),
+  //       );
+  //     }),
+  // );
 }
+// }
 // class StreamHomePage extends StatefulWidget {
 //   const StreamHomePage({super.key});
 //   @override

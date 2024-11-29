@@ -3,7 +3,11 @@ import 'models/pizza.dart';
 import 'httphelper.dart';
 
 class PizzaDetailScreen extends StatefulWidget {
-  const PizzaDetailScreen({super.key});
+  final Pizza pizza;
+  final bool isNew;
+
+  const PizzaDetailScreen(
+      {super.key, required this.pizza, required this.isNew});
   @override
   State<PizzaDetailScreen> createState() => _PizzaDetailScreenState();
 }
@@ -34,11 +38,30 @@ class _PizzaDetailScreenState extends State<PizzaDetailScreen> {
     double price = double.parse(txtPrice.text);
     String description = txtDescription.text;
     String imageUrl = txtImageUrl.text;
-    Pizza pizza = Pizza(id, pizzaName, description, price, imageUrl);
-    String result = await helper.postPizza(pizza);
+    Pizza pizza = Pizza(
+        id: id,
+        pizzaName: pizzaName,
+        description: description,
+        price: price,
+        imageUrl: imageUrl);
+    String result =
+        await (widget.isNew ? helper.postPizza(pizza) : helper.putPizza(pizza));
+
     setState(() {
       operationResult = result;
     });
+  }
+
+  @override
+  void initState() {
+    if (!widget.isNew) {
+      txtId.text = widget.pizza.id.toString();
+      txtName.text = widget.pizza.pizzaName;
+      txtPrice.text = widget.pizza.description;
+      txtPrice.text = widget.pizza.price.toString();
+      txtDescription.text = widget.pizza.imageUrl;
+    }
+    super.initState();
   }
 
   @override

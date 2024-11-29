@@ -292,3 +292,166 @@ FloatingActionButton yang akan menavigasi ke rute PizzaDetail.
 ## 16. Tambahkan detail pizza di kolom teks dan tekan tombol Kirim Postingan. Anda akan melihat hasil yang berhasil, seperti yang ditunjukkan pada gambar berikut.
 
 ![alt text](image-2.png)
+
+# C. Praktikum 3, PUT-ting data
+
+## 1. Masuk ke layanan Lab Mock di https://app.wiremock.cloud/ dan klik bagian Stubs,
+
+kemudian, buatlah stub baru.
+
+## 2. Lengkapi isian seperti gambar berikut:
+
+## 3. Simpan
+
+## 4. Di proyek Flutter, tambahkan metode putPizza ke kelas HttpHelper di file http_helper.dart
+
+```
+ Future<String> putPizza(Pizza pizza) async {
+    const putPath = "pizza";
+    String put = json.encode(pizza.toJson());
+    final Uri url = Uri.parse(authority + putPath);
+    final http.Response result = await http.put(url, body: put);
+    return result.body;
+  }
+```
+
+## 5. Di kelas PizzaDetailScreen di file pizza_detail.dart, tambahkan dua properti, Pizza dan boolean, dan di konstruktor, atur dua properti tersebut
+
+```
+ final Pizza pizza;
+  final bool isNew;
+
+  const PizzaDetailScreen(
+      {super.key, required this.pizza, required this.isNew});
+```
+
+## 6. Di kelas PizzaDetailScreenState, override metode initState.
+
+Bila properti isNew dari kelas
+PizzaDetail tidak baru, properti ini akan menetapkan konten TextFields dengan nilai objek
+Pizza yang dilewatkan
+
+```
+ @override
+  void initState() {
+    if (!widget.isNew) {
+      txtId.text = widget.pizza.id.toString();
+      txtName.text = widget.pizza.pizzaName;
+      txtPrice.text = widget.pizza.description;
+      txtPrice.text = widget.pizza.price.toString();
+      txtDescription.text = widget.pizza.imageUrl;
+    }
+    super.initState();
+  }
+```
+
+## 7.Edit metode savePizza sehingga memanggil metode helper.postPizza ketika properti isNew bernilai benar, dan helper.putPizza ketika bernilai salah
+
+```
+ String result =
+        await (widget.isNew ? helper.postPizza(pizza) : helper.putPizza(pizza));
+```
+
+## 8.Di file main.dart, di metode build \_MyHomePageState, tambahkan properti onTap ke ListTile
+
+sehingga saat pengguna mengetuknya, aplikasi akan mengubah rute dan
+menampilkan layar PizzaDetail, dengan menampilkan data pizza yang ada saat ini dan
+menjadikan false untuk parameter isNew
+
+```
+ return ListTile(
+                title: Text(snapshot.data![position].pizzaName),
+                subtitle: Text(
+                    '${snapshot.data![position].description}  ${snapshot.data![position].price}'),
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => PizzaDetailScreen(
+                                pizza: snapshot.data![position],
+                                isNew: false,
+                              )));
+                },
+              );
+```
+
+## 9. Di floatingActionButton, passing data Pizza baru dan menjadikan true untuk parameter isNew ke rute PizzaDetail
+
+```
+floatingActionButton: FloatingActionButton(
+        child: const Icon(Icons.add),
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => PizzaDetailScreen(
+                      pizza: Pizza(
+                        id: 0,
+                        pizzaName: '',
+                        description: '',
+                        price: 0.0,
+                        imageUrl: '',
+                      ),
+                      isNew: true,
+                    )),
+          );
+        },
+      ),
+    ;
+```
+
+## 10. Jalankan aplikasi. Pada layar utama, ketuk Pizza mana pun untuk menavigasi ke rute PizzaDetail
+
+## 11. Edit detail pizza di kolom teks dan tekan tombol Simpan. Anda akan melihat pesan yang menunjukkan bahwa detail pizza telah diperbarui
+
+![alt text](image-1.png)
+
+# D. Praktikum 4, DELETE-ing data
+
+## 1. Masuk ke layanan Wiremock di https://app.wiremock.cloud dan klik pada bagian Stubs
+
+pada contoh API. Kemudian, buatlah sebuah stub baru
+
+## 2. Lengkapi isian, dengan data berikut:
+
+• Name: Delete Pizza
+• Verb: DELETE
+• Address: /pizza
+• Status: 200
+• Body Type: json
+• Body: {"message": "Pizza was deleted"}
+
+## 3. Save the new stub
+
+## 4. Di proyek Flutter, tambahkan metode deletePizza ke kelas HttpHelper di file http_helper.dart
+
+```
+Future<String> deletePizza(int id) async {
+    const deletePath = "pizza";
+    final Uri url = Uri.parse(authority + deletePath);
+    final http.Response result = await http.delete(url);
+    return result.body;
+  }
+```
+
+## 5. Pada file main.dart, di metode build kelas \_MyHomePageState, refaktor itemBuilder dari ListView.builder agar ListTile terdapat dalam widget Dismissible, seperti berikut
+
+```
+ return ListView.builder(
+            itemCount: (pizzas.data == null) ? 0 : pizzas.data!.length,
+            itemBuilder: (BuildContext context, int position) {
+              return Dismissible(
+                key: Key(pizzas.data![position].id.toString()),
+                onDismissed: (item) {
+                  Httphelper helper = Httphelper();
+                  pizzas.data!.removeWhere((element) {
+                    return element.id == pizzas.data![position].id;
+                  });
+                  helper.deletePizza(pizzas.data![position].id);
+                },
+```
+
+## 6. Jalankan aplikasi. Saat Anda menggeser elemen apa pun dari daftar pizza, ListTile akan menghilang
+
+![alt text](image-3.png)
+![alt text](image-4.png)

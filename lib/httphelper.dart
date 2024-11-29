@@ -29,4 +29,19 @@ class Httphelper {
     final http.Response result = await http.post(url, body: post);
     return result.body;
   }
+
+  Future<String> putPizza(Pizza pizza) async {
+    const putPath = "pizza";
+    String put = json.encode(pizza.toJson());
+    final Uri url = Uri.parse(authority + putPath);
+    final http.Response result = await http.put(url, body: put);
+    return result.body;
+  }
+
+  Future<String> deletePizza(int id) async {
+    const deletePath = "pizza";
+    final Uri url = Uri.parse(authority + deletePath);
+    final http.Response result = await http.delete(url);
+    return result.body;
+  }
 }

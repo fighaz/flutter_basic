@@ -5,7 +5,13 @@ class Pizza {
   final double price;
   final String imageUrl;
 
-  Pizza(this.id, this.pizzaName, this.description, this.price, this.imageUrl);
+  Pizza({
+    required this.id,
+    required this.pizzaName,
+    required this.description,
+    required this.price,
+    required this.imageUrl,
+  });
   Pizza.fromJson(Map<String, dynamic> json)
       : id = json['id'],
         pizzaName = json['pizzaName'],

@@ -17,6 +17,7 @@ import 'package:flutter_basic/navigationdialog.dart';
 // import 'package:flutter_basic/basic_widgets/text_widget.dart';
 import 'package:flutter_basic/pages/home_page.dart';
 import 'package:flutter_basic/pages/item_page.dart';
+import 'package:flutter_basic/pizza_detail.dart';
 import 'package:flutter_basic/provider/plan_provide.dart';
 import 'package:flutter_basic/random_screen.dart';
 import 'package:flutter_basic/views/plan.screen.dart';
@@ -185,23 +186,34 @@ class _MyHomePageState extends State<MyHomePage> {
         title: const Text('JSON'),
       ),
       body: FutureBuilder(
-          future: callPizzas(),
-          builder: (BuildContext context, AsyncSnapshot<List<Pizza>> snapshot) {
-            if (snapshot.hasError) {
-              return const Text('Sometging when wrong');
-            } else if (!snapshot.hasData) {
-              return const CircularProgressIndicator();
-            }
-            return ListView.builder(
-                itemCount: (snapshot.data == null) ? 0 : snapshot.data!.length,
-                itemBuilder: (BuildContext context, int position) {
-                  return ListTile(
-                    title: Text(snapshot.data![position].pizzaName),
-                    subtitle: Text(
-                        '${snapshot.data![position].description}i  ${snapshot.data![position].price}'),
-                  );
-                });
-          }),
+        future: callPizzas(),
+        builder: (BuildContext context, AsyncSnapshot<List<Pizza>> snapshot) {
+          if (snapshot.hasError) {
+            return const Text('Something went wrong');
+          } else if (!snapshot.hasData) {
+            return const CircularProgressIndicator();
+          }
+          return ListView.builder(
+            itemCount: (snapshot.data == null) ? 0 : snapshot.data!.length,
+            itemBuilder: (BuildContext context, int position) {
+              return ListTile(
+                title: Text(snapshot.data![position].pizzaName),
+                subtitle: Text(
+                    '${snapshot.data![position].description}  ${snapshot.data![position].price}'),
+              );
+            },
+          );
+        },
+      ),
+      floatingActionButton: FloatingActionButton(
+        child: const Icon(Icons.add),
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const PizzaDetailScreen()),
+          );
+        },
+      ),
     );
   }
 
